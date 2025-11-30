@@ -1,4 +1,6 @@
 #include <bits/stdc++.h>
+#include <chrono>
+#include <fstream>
 #include "ticket.hpp"
 #include "topdown_dp.hpp"
 #include <vector>
@@ -29,27 +31,27 @@ int toMinuteStamp(int month, int day, int hour, int minute) {
 
 
 // Memoization table and p[] array
-vector<long long> memo;
+vector<float> memo;
 vector<int> pIndex;         // p[i] = last non-conflicting ticket before i
 vector<Ticket> tickets;
 
 // this is the actual topdown DP function
 // Return max scientific value achievable using tickets[0..i]
-long long solveDP(int i) {
+float solveDP(int i) {
     if (i < 0) return 0;
     if (memo[i] != -1) return memo[i];
 
     // Option A: skip ticket i
-    long long skip = solveDP(i - 1);
+    float skip = solveDP(i - 1);
 
     // Option B: take ticket i
-    long long take = tickets[i].value + solveDP(pIndex[i]);
+    float take = tickets[i].value + solveDP(pIndex[i]);
 
     return memo[i] = max(skip, take);
 }
 
 // main function to set up before dynamic programming can be called
-long long telescopeScheduleTopDown(Scope_Ticket arr[], int n) {
+float telescopeScheduleTopDown(Scope_Ticket arr[], int n) {
     tickets.clear();
     vector<Scope_Ticket> temp_request(arr, arr + n);
 
@@ -61,9 +63,15 @@ long long telescopeScheduleTopDown(Scope_Ticket arr[], int n) {
             temp_request[i].S_hour,
             temp_request[i].S_min
         );
+        int endDay = temp_request[i].date;
+        if (temp_request[i].E_hour < temp_request[i].S_hour || 
+            (temp_request[i].E_hour == temp_request[i].S_hour && temp_request[i].E_min < temp_request[i].S_min)) {
+            // telescope goes past midnight
+            endDay += 1;
+        }
         int endTS = toMinuteStamp(
             temp_request[i].month,
-            temp_request[i].date,
+            endDay,
             temp_request[i].E_hour,
             temp_request[i].E_min
         );
@@ -99,7 +107,7 @@ long long telescopeScheduleTopDown(Scope_Ticket arr[], int n) {
         pIndex[i] = ans;
     }
 
-    memo.assign(n, -1);
+    memo.assign(tickets.size(), -1);
 
-    return solveDP(n - 1);
+    return solveDP(tickets.size() - 1);
 }
