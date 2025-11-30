@@ -7,14 +7,6 @@
 using namespace std;
 int to_minutes(int hour, int minute);
 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <ctime>
-#include "ticket.hpp"
-
-using namespace std;
-
 // definition matches the prototype in ticket.hpp
 float greedy_value_time(Scope_Ticket* arr, int size)
 {
