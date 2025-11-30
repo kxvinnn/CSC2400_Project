@@ -14,19 +14,21 @@ struct Ticket {
 };
 
 // Convert month/day + hour/min into an absolute comparable minute count
-int toMinuteStamp(int month, int day, int hour, int minute) {
+int toMinuteStamp(/*int month, int day, */int hour, int minute) {
     // Days in months (no leap-year logic needed for scheduling)
-    static int mdays[13] = {0,
+    /*static int mdays[13] = {0,
         31, 28, 31, 30, 31, 30,
         31, 31, 30, 31, 30, 31
-    };
+    };*/
 
-    int daysBefore = 0;
-    for(int m = 1; m < month; m++)
-        daysBefore += mdays[m];
+    //int daysBefore = 0;
+    //for(int m = 1; m < month; m++)
+    //    daysBefore += mdays[m];
 
-    int totalDays = daysBefore + (day - 1);
-    return totalDays * 24 * 60 + hour * 60 + minute;
+    //int totalDays = daysBefore + (day - 1);
+    //return totalDays * 24 * 60 + hour * 60 + minute;
+
+    return hour * 60 + minute;
 }
 
 
@@ -58,20 +60,15 @@ float telescopeScheduleTopDown(Scope_Ticket arr[], int n) {
     // turning all time variables into minutes and storing it in another vector
     for (int i = 0; i < (int)temp_request.size(); i++) {
         int startTS = toMinuteStamp(
-            temp_request[i].month,
-            temp_request[i].date,
+            //temp_request[i].month,
+            //temp_request[i].date,
             temp_request[i].S_hour,
             temp_request[i].S_min
         );
-        int endDay = temp_request[i].date;
-        if (temp_request[i].E_hour < temp_request[i].S_hour || 
-            (temp_request[i].E_hour == temp_request[i].S_hour && temp_request[i].E_min < temp_request[i].S_min)) {
-            // telescope goes past midnight
-            endDay += 1;
-        }
+
         int endTS = toMinuteStamp(
-            temp_request[i].month,
-            endDay,
+            //temp_request[i].month,
+            //temp_request[i].date,
             temp_request[i].E_hour,
             temp_request[i].E_min
         );
@@ -107,7 +104,7 @@ float telescopeScheduleTopDown(Scope_Ticket arr[], int n) {
         pIndex[i] = ans;
     }
 
-    memo.assign(tickets.size(), -1);
+    memo.assign(tickets.size(), -1.0f);
 
     return solveDP(tickets.size() - 1);
 }
