@@ -3,8 +3,10 @@
 #include <string>
 #include <fstream>
 #include "ticket.hpp"
+//#include "greedy.hpp"
 
 using namespace std;
+
 float greedy_value_time(Scope_Ticket* arr, int size);
 
 //takes the values passed to it and inserts them into a new ticket object
@@ -23,6 +25,13 @@ Scope_Ticket NewTicket(string T_name, string ID, float val, int S_hour, int S_mi
 	return new_T;
 }
 
+void deleteTicketInfo(Scope_Ticket* myArray, int toD)
+{
+	myArray[toD].Val = 0;
+	myArray[toD].S_hour = -1;
+	myArray[toD].E_hour = -1;
+}
+
 //prints an individual ticket to the standard output.
 void printTicket(Scope_Ticket* myTicket)
 {
@@ -35,9 +44,12 @@ void printArray(Scope_Ticket* myTicket, int size)
 {
 	for (int i = 0; i < size; i++)
 	{
-		cout << "My tickets value: " << myTicket[i].Val << "\n";
-		cout << "My tickets start time: " << myTicket[i].S_hour << "\n";
-		cout << "My tickets end time: " << myTicket[i].E_hour << "\n";
+		cout << "Ticket: " << i << "\n";
+		cout << "Value: " << myTicket[i].Val << "\n";
+		cout << "Day: " << myTicket[i].date << "\n";
+		cout << "Starts: " << myTicket[i].S_hour << ":" << myTicket[i].S_min << "\n";
+		cout << "Ends: " << myTicket[i].E_hour << ":" << myTicket[i].E_min << "\n";
+		cout << "----------" << "\n";
 	}
 }
 
@@ -138,7 +150,7 @@ void mergeArrayTime(Scope_Ticket* myArray, int left, int mid, int right)
 
 void mergeSortTime(Scope_Ticket* myArray, int left, int right)
 {
-	if(left > right)
+	if(left >= right)
 	{
 		return;
 	}
@@ -159,15 +171,23 @@ int menu(Scope_Ticket* myArray, int size)
 	bool done = false; 
 	clock_t start;
 	clock_t duration;
-	float result_greedy;
 	
 	int c1, c2;
+	
+	float R_val;
+	
+	
+	start = clock();
+	cout << "Starting sort @" << start << "\n";
+	sortArrayTime(myArray, size);
+	duration = clock() - start;
+	cout << "Array sorted. It took this long: " << (float)duration / CLOCKS_PER_SEC;
 	
 	while (!done)
 	{
 		cout << "\n\n----------\n";
 		cout << "Enter: \n1. output all current tickets. \n2: Run greedy algorithm. \n3: Run dynamic programing \n4: load another file." << "\n";
-		cout << "5: display the ticket for a specific \n6: Exit the program. \n7:Compare tow tickets. \n8:sort array.\n";
+		cout << "5: display the ticket for a specific \n6: Exit the program.\n(enter 9 to resort)\n";
 		cout << "---------- \n";
 		cin >> u_choice;
 		cout << "\n";
@@ -189,14 +209,36 @@ int menu(Scope_Ticket* myArray, int size)
 			case 2:
 				start = clock();
 				cout << "This is the start time: " << start << "\n";
-				result_greedy = greedy_value_time(myArray, size);
-				cout << "The total value from the greedy algorithm is: " << result_greedy << "\n";
+				R_val = greedy_value_time(myArray, size);
 				duration = clock() - start;
-				cout << "This is how long it took to run: " << (float)duration / CLOCKS_PER_SEC;
+				cout << "This is how long it took to run: " << (float)duration / CLOCKS_PER_SEC << "\n";
+				cout << "-----\nTotal scientific output found: " << R_val << "\n-----\n";
+				system("pause");
 				break;
 			
 			case 3:
-				cout << "waiting to be implimented... \n\n";
+				cout << "Do you wish to run bottum up(1)? Or top downn(2)?\n";
+				cin >> u_choice;
+				if(u_choice == 1)
+				{
+					start = clock();
+					cout << "This is the start time: " << start << "\n";
+					// waiting for bottom up function
+					duration = clock() - start;
+					cout << "This is how long it took to run: " << (float)duration / CLOCKS_PER_SEC;
+				}
+				else if (u_choice == 2)
+				{
+					start = clock();
+					cout << "This is the start time: " << start << "\n";
+					// waiting for bottom up function
+					duration = clock() - start;
+					cout << "This is how long it took to run: " << (float)duration / CLOCKS_PER_SEC;
+				}
+				else
+				{
+					cout << "Neither ran\n";
+				}
 				break;
 			case 4:
 				return -1;
@@ -225,8 +267,18 @@ int menu(Scope_Ticket* myArray, int size)
 				cout << "This element 1 starts before element 2: " << lessThanTicket(&myArray[c1], &myArray[c2]) << "\n";
 				break;
 			case 8:
+				cout << "Which element do you wish to delete? (1-" << size << "):";
+				cin >> u_choice;
+				cout << u_choice << " has been deleted.\n";
+				deleteTicketInfo(myArray, u_choice - 1);
+				u_choice = -1;
+				break;
+			case 9:
 				sortArrayTime(myArray, size);
-				cout << "----------\nArray sorted. \n\n";
+				cout << "----------\n";
+				cout << "Array Sorted\n";
+				cout << "----------\n";
+				break;
 			default:
 			{
 				cout << "There was an error. Please enter 1-5. or 0 to see the options again. Or contact administration \n";
@@ -316,4 +368,3 @@ while(fine < 0)
 	
 	return 1;
 }
-
