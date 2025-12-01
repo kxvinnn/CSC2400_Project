@@ -20,19 +20,13 @@ using namespace std;
     int endMinutes;   //disregard
 };*/
 
-int convertToMinutes(int month, int date, int hour, int min){ //function used to convert day/month to minutes to existing time
-  int daysInMonth[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}; //array doesn not account for leap years
-  int totalDays = 0;
-  for (int i = 0; i < month - 1; i++){ //subtract 1 from month to not account the days in of the current month and only days before current month
-    totalDays += daysInMonth[i];
-  }
-  totalDays += date - 1;//subtract 1 because current date is not yet "done"  
-  return totalDays * 1440 + hour * 60 + min;
+int convertToMinutes(int hour, int min){
+  return hour * 60 + min;
 };
 
 bool compareByEndTime(Scope_Ticket &a, Scope_Ticket &b){//compares which two tickets is less than
-  int aEnd = convertToMinutes(a.month, a.date, a.E_hour, a.E_min);
-  int bEnd = convertToMinutes(b.month, b.date, b.E_hour, b.E_min);
+  int aEnd = convertToMinutes(a.E_hour, a.E_min);
+  int bEnd = convertToMinutes(b.E_hour, b.E_min);
   return aEnd < bEnd;
 };
 
@@ -51,9 +45,9 @@ void sortTicketsByEndTime(Scope_Ticket *ticket, int size){//used brute force bub
 void buildPredecessor(Scope_Ticket *tickets, int size, int *Predecessor){
   for (int i = 0; i < size; i++){
     Predecessor[i] = -1;//initializes first element with no predecessor
-    int iStart = convertToMinutes(tickets[i].month, tickets[i].date, tickets[i].S_hour, tickets[i].S_min);
+    int iStart = convertToMinutes(tickets[i].S_hour, tickets[i].S_min);
     for (int j = i - 1; j >= 0; j--){//loop used to scan backwards 
-      int jEnd = convertToMinutes(tickets[j].month, tickets[j].date, tickets[j].E_hour, tickets[j].E_min);
+      int jEnd = convertToMinutes(tickets[j].E_hour, tickets[j].E_min);
       if (jEnd <= iStart){
         Predecessor[i]=j; //initialize P[] at index i with the predecessor j
         break;
@@ -118,7 +112,6 @@ float runBottomUpDP(Scope_Ticket *tickets, int size){
   for (int i = count - 1; i >= 0; i--){
   int j = selected[i];
   cout << "Ticket Name: " << tickets[j].T_name << endl;
-  cout <<"Month: " << tickets[j].month << "/" << tickets[j].date << endl;
   cout << "Start: " << tickets[j].S_hour << ":" << tickets[j].S_min << endl;
   cout << "End: " << tickets[j].E_hour << ":" << tickets[j].E_min << endl;
   cout << "Value: " << tickets[j].Val << endl;
