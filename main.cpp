@@ -4,12 +4,31 @@
 #include <fstream>
 #include <chrono>
 #include "ticket.hpp"
+#include "greedy.hpp"
+#include "topdown_dp.hpp"
+#include "bottomUpAlg.hpp"
 
 
 using namespace std;
 
 float greedy_value_time(Scope_Ticket* arr, int size);
 float telescopeScheduleTopDown(Scope_Ticket arr[], int n);
+
+//To run this from the command line, go to the directory the
+// .cpp files are stored in. Then type in the following commands:
+//
+// g++ *.cpp -o executable_name
+//
+// Windows:
+// 	Go to the directory the executable is stored in.
+// 	Type in the command line:
+// 	executable_name
+//
+// Linux:
+// 	Go to the directory the executable is stored in.
+// 	Type in the command line:
+// 	./executable_name
+
 
 //takes the values passed to it and inserts them into a new ticket object
 Scope_Ticket NewTicket(string T_name, string ID, float val, int S_hour, int S_min, int E_hour, int E_min, int month, int date) 
@@ -189,12 +208,13 @@ void callDyanmic(Scope_Ticket* myArray, int size)
 	cin >> u_choice;
 	if(u_choice == 1)
 	{
-		start = clock();
-		cout << "This is the start time: " << start << "\n";
-		
-		duration = clock() - start;
-		cout << "This is how long it took to run: " << (float)duration / CLOCKS_PER_SEC;
+		auto started = std::chrono::high_resolution_clock::now();
+		TD_val = runBottomUpDP(myArray, size);
+		auto done = std::chrono::high_resolution_clock::now();
+		auto dur = chrono::duration_cast<std::chrono::microseconds>(done-started).count();
+		cout << "This is how long it took to run in micro seconds: " << dur << "\n";
 		cout << "-----\nTotal scientific output found: " << TD_val << "\n-----\n";
+		system("pause");
 	}
 	else if (u_choice == 2)
 	{
